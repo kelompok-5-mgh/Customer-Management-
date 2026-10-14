@@ -1,22 +1,13 @@
-# Customer Management System (CRM) - Login & Register with Database Activity Log
+# Customer Management System (CRM) - Separate Login & Register Pages
 
-Proyek aplikasi **Customer Management System (CRM)** dengan fitur Login, Pendaftaran (Registrasi) akun baru, serta Database simulasi berbasis *LocalStorage* untuk mencatat seluruh aktivitas aplikasi secara real-time.
+Aplikasi **Customer Management System (CRM)** dengan halaman **Login (`index.html`)** dan halaman **Pendaftaran (`register.html`)** yang dipisahkan, lengkap dengan Database simulasi (*LocalStorage*) untuk mencatat log aktivitas aplikasi.
 
 ## Struktur File
-- `index.html` : Kerangka antarmuka Login, Registrasi, dan Panel Log Aktivitas Database.
-- `style.css`  : Styling modern responsif dengan grid layout dan panel aktivitas gelap.
-- `script.js`  : Logika autentikasi (Login & Register), penyimpanan ke database lokal, dan pencatatan log aktivitas.
-
-## Fitur Utama
-1. **Form Login & Pendaftaran (Tabbed Switch)**: Pengguna dapat beralih antara form Masuk dan Daftar dengan mudah.
-2. **Validasi & Penyimpanan Data**: Akun baru yang didaftarkan tersimpan di basis data lokal browser (`LocalStorage`).
-3. **Log Aktivitas Database Real-time**: Setiap aksi (pendaftaran, login berhasil, login gagal, pembersihan log) dicatat secara otomatis lengkap dengan stempel waktu dan statusnya.
+- `index.html` : Halaman khusus Masuk (Login) beserta panel log aktivitas database.
+- `register.html` : Halaman khusus Daftar Akun Baru beserta panel log aktivitas database.
+- `style.css`  : Lembar gaya bersama yang konsisten dan responsif.
+- `script.js`  : Skrip JavaScript terpusat untuk autentikasi, manajemen database lokal, dan pencatatan log real-time.
 
 ## Kredensial Bawaan (Default Admin)
 - **Email:** `admin@crm.com`
 - **Password:** `password123`
-
-## Cara Upload ke GitHub
-1. Ekstrak file ZIP ini.
-2. Upload file (`index.html`, `style.css`, `script.js`, `README.md`) ke repository GitHub Anda.
-3. Aktifkan **GitHub Pages** di pengaturan repository untuk menjalankan aplikasi secara online.

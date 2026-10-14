@@ -3,31 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Registrasi - Customer Management System</title>
+    <title>Masuk - Customer Management System</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Font Inter & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="login-container">
         <div class="login-card">
-            <!-- Tabs Header -->
-            <div class="auth-tabs">
-                <button class="tab-btn active" id="loginTabBtn">Masuk</button>
-                <button class="tab-btn" id="registerTabBtn">Daftar</button>
+            <div class="login-header">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <h2>Selamat Datang</h2>
+                <p>Silakan masuk ke akun CRM Anda</p>
             </div>
 
-            <!-- Notifikasi Pesan -->
             <div id="alertMessage" class="alert-message" style="display: none;"></div>
 
-            <!-- Form Login -->
-            <form id="loginForm" class="auth-form active-form">
-                <div class="login-header" style="margin-bottom: 24px;">
-                    <h2>Selamat Datang</h2>
-                    <p>Silakan masuk ke akun CRM Anda</p>
-                </div>
-
+            <form id="loginForm" class="auth-form">
                 <div class="input-group">
                     <label for="loginEmail"><i class="fa-regular fa-envelope"></i> Email</label>
                     <input type="email" id="loginEmail" placeholder="nama@perusahaan.com" required>
@@ -54,51 +48,18 @@
                 </button>
             </form>
 
-            <!-- Form Registrasi -->
-            <form id="registerForm" class="auth-form">
-                <div class="login-header" style="margin-bottom: 24px;">
-                    <h2>Buat Akun Baru</h2>
-                    <p>Daftar untuk mengakses sistem CRM</p>
-                </div>
-
-                <div class="input-group">
-                    <label for="regName"><i class="fa-regular fa-user"></i> Nama Lengkap</label>
-                    <input type="text" id="regName" placeholder="Nama Lengkap Anda" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="regEmail"><i class="fa-regular fa-envelope"></i> Email</label>
-                    <input type="email" id="regEmail" placeholder="nama@perusahaan.com" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="regPassword"><i class="fa-solid fa-lock"></i> Kata Sandi</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="regPassword" placeholder="Minimal 6 karakter" required>
-                        <i class="fa-regular fa-eye togglePassword" data-target="regPassword"></i>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <span class="btn-text">Daftar Akun</span>
-                    <i class="fa-solid fa-user-plus"></i>
-                </button>
-            </form>
-
             <div class="login-footer">
-                <p>Aktivitas tersimpan otomatis di Database lokal (LocalStorage)</p>
+                <p>Belum punya akun? <a href="register.html">Daftar di sini</a></p>
             </div>
         </div>
 
-        <!-- Panel Aktivitas Database (Opsional/Debug View) -->
+        <!-- Panel Aktivitas Database -->
         <div class="activity-panel">
             <div class="activity-header">
                 <h3><i class="fa-solid fa-database"></i> Log Aktivitas Database</h3>
                 <button id="clearLogs" title="Bersihkan Log"><i class="fa-solid fa-trash-can"></i></button>
             </div>
-            <ul id="activityLogList" class="activity-list">
-                <!-- Log akan dimasukkan lewat JS -->
-            </ul>
+            <ul id="activityLogList" class="activity-list"></ul>
         </div>
 
         <div class="login-background-shapes">
