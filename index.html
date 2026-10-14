@@ -3,36 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Customer Management System</title>
+    <title>Login & Registrasi - Customer Management System</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Font Poppins & FontAwesome -->
+    <!-- Font Inter & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="login-container">
         <div class="login-card">
-            <div class="login-header">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-users-gear"></i>
-                </div>
-                <h2>CRM Portal</h2>
-                <p>Silakan masuk ke akun Customer Management Anda</p>
+            <!-- Tabs Header -->
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="loginTabBtn">Masuk</button>
+                <button class="tab-btn" id="registerTabBtn">Daftar</button>
             </div>
 
-            <form id="loginForm" class="login-form">
-                <div id="errorMessage" class="error-message" style="display: none;"></div>
-                
-                <div class="input-group">
-                    <label for="email"><i class="fa-regular fa-envelope"></i> Email</label>
-                    <input type="email" id="email" placeholder="nama@perusahaan.com" required>
+            <!-- Notifikasi Pesan -->
+            <div id="alertMessage" class="alert-message" style="display: none;"></div>
+
+            <!-- Form Login -->
+            <form id="loginForm" class="auth-form active-form">
+                <div class="login-header" style="margin-bottom: 24px;">
+                    <h2>Selamat Datang</h2>
+                    <p>Silakan masuk ke akun CRM Anda</p>
                 </div>
 
                 <div class="input-group">
-                    <label for="password"><i class="fa-solid fa-lock"></i> Kata Sandi</label>
+                    <label for="loginEmail"><i class="fa-regular fa-envelope"></i> Email</label>
+                    <input type="email" id="loginEmail" placeholder="nama@perusahaan.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="loginPassword"><i class="fa-solid fa-lock"></i> Kata Sandi</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" placeholder="••••••••" required>
-                        <i class="fa-regular fa-eye" id="togglePassword"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <i class="fa-regular fa-eye togglePassword" data-target="loginPassword"></i>
                     </div>
                 </div>
 
@@ -49,10 +54,53 @@
                 </button>
             </form>
 
+            <!-- Form Registrasi -->
+            <form id="registerForm" class="auth-form">
+                <div class="login-header" style="margin-bottom: 24px;">
+                    <h2>Buat Akun Baru</h2>
+                    <p>Daftar untuk mengakses sistem CRM</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="regName"><i class="fa-regular fa-user"></i> Nama Lengkap</label>
+                    <input type="text" id="regName" placeholder="Nama Lengkap Anda" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="regEmail"><i class="fa-regular fa-envelope"></i> Email</label>
+                    <input type="email" id="regEmail" placeholder="nama@perusahaan.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="regPassword"><i class="fa-solid fa-lock"></i> Kata Sandi</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="regPassword" placeholder="Minimal 6 karakter" required>
+                        <i class="fa-regular fa-eye togglePassword" data-target="regPassword"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <span class="btn-text">Daftar Akun</span>
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+
             <div class="login-footer">
-                <p>Belum punya akses? <a href="#">Hubungi Administrator</a></p>
+                <p>Aktivitas tersimpan otomatis di Database lokal (LocalStorage)</p>
             </div>
         </div>
+
+        <!-- Panel Aktivitas Database (Opsional/Debug View) -->
+        <div class="activity-panel">
+            <div class="activity-header">
+                <h3><i class="fa-solid fa-database"></i> Log Aktivitas Database</h3>
+                <button id="clearLogs" title="Bersihkan Log"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+            <ul id="activityLogList" class="activity-list">
+                <!-- Log akan dimasukkan lewat JS -->
+            </ul>
+        </div>
+
         <div class="login-background-shapes">
             <div class="shape shape-1"></div>
             <div class="shape shape-2"></div>

@@ -1,25 +1,22 @@
-# Customer Management System (CRM) - Login Page
+# Customer Management System (CRM) - Login & Register with Database Activity Log
 
-Proyek awal tampilan halaman login untuk aplikasi **Customer Management System (CRM)** dengan file terpisah (`index.html`, `style.css`, `script.js`).
+Proyek aplikasi **Customer Management System (CRM)** dengan fitur Login, Pendaftaran (Registrasi) akun baru, serta Database simulasi berbasis *LocalStorage* untuk mencatat seluruh aktivitas aplikasi secara real-time.
 
 ## Struktur File
-- `index.html` : Kerangka struktur halaman login.
-- `style.css`  : Desain dan tata letak modern (Clean & Responsive).
-- `script.js`  : Logika interaksi (Validasi form & toggle password).
+- `index.html` : Kerangka antarmuka Login, Registrasi, dan Panel Log Aktivitas Database.
+- `style.css`  : Styling modern responsif dengan grid layout dan panel aktivitas gelap.
+- `script.js`  : Logika autentikasi (Login & Register), penyimpanan ke database lokal, dan pencatatan log aktivitas.
 
-## Kredensial Pengujian (Dummy)
+## Fitur Utama
+1. **Form Login & Pendaftaran (Tabbed Switch)**: Pengguna dapat beralih antara form Masuk dan Daftar dengan mudah.
+2. **Validasi & Penyimpanan Data**: Akun baru yang didaftarkan tersimpan di basis data lokal browser (`LocalStorage`).
+3. **Log Aktivitas Database Real-time**: Setiap aksi (pendaftaran, login berhasil, login gagal, pembersihan log) dicatat secara otomatis lengkap dengan stempel waktu dan statusnya.
+
+## Kredensial Bawaan (Default Admin)
 - **Email:** `admin@crm.com`
 - **Password:** `password123`
 
 ## Cara Upload ke GitHub
-1. Ekstrak file ZIP ini di komputer Anda.
-2. Buat repository baru di [GitHub](https://github.com).
-3. Upload file-file tersebut melalui web GitHub atau melalui terminal/Git:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Add login page files"
-   git branch -M main
-   git remote add origin <URL_REPOSITORY_ANDA>
-   git push -u origin main
-   ```
+1. Ekstrak file ZIP ini.
+2. Upload file (`index.html`, `style.css`, `script.js`, `README.md`) ke repository GitHub Anda.
+3. Aktifkan **GitHub Pages** di pengaturan repository untuk menjalankan aplikasi secara online.
