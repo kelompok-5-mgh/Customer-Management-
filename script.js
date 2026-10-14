@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const alertMessage = document.getElementById('alertMessage');
-    const activityLogList = document.getElementById('activityLogList');
-    const clearLogsBtn = document.getElementById('clearLogs');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     // Toggle Password Visibility
     document.querySelectorAll('.togglePassword').forEach(icon => {
@@ -17,64 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Inisialisasi Database Lokal (LocalStorage)
+    // Inisialisasi Data Pengguna di LocalStorage jika belum ada
     function initDatabase() {
         if (!localStorage.getItem('crm_users')) {
             const defaultUsers = [{
                 name: 'Administrator',
                 email: 'admin@crm.com',
-                password: 'password123',
-                createdAt: new Date().toISOString()
+                password: 'password123'
             }];
             localStorage.setItem('crm_users', JSON.stringify(defaultUsers));
         }
-        if (!localStorage.getItem('crm_logs')) {
-            localStorage.setItem('crm_logs', JSON.stringify([]));
-        }
     }
 
-    // Catat Aktivitas ke Database (LocalStorage)
-    function logActivity(description, type = 'info') {
-        const logs = JSON.parse(localStorage.getItem('crm_logs')) || [];
-        const newLog = {
-            time: new Date().toLocaleString('id-ID'),
-            description: description,
-            type: type
-        };
-        logs.unshift(newLog);
-        localStorage.setItem('crm_logs', JSON.stringify(logs));
-        renderLogs();
-    }
-
-    // Tampilkan Log di Panel Aktivitas
-    function renderLogs() {
-        if (!activityLogList) return;
-        const logs = JSON.parse(localStorage.getItem('crm_logs')) || [];
-        activityLogList.innerHTML = '';
-        if (logs.length === 0) {
-            activityLogList.innerHTML = '<li class="activity-item"><span class="activity-time">-</span><span class="activity-desc">Belum ada aktivitas tercatat.</span></li>';
-            return;
-        }
-        logs.forEach(log => {
-            const li = document.createElement('li');
-            li.className = `activity-item ${log.type}`;
-            li.innerHTML = `
-                <span class="activity-time"><i class="fa-regular fa-clock"></i> ${log.time}</span>
-                <span class="activity-desc">${log.description}</span>
-            `;
-            activityLogList.appendChild(li);
-        });
-    }
-
-    if (clearLogsBtn) {
-        clearLogsBtn.addEventListener('click', () => {
-            localStorage.setItem('crm_logs', JSON.stringify([]));
-            renderLogs();
-            showAlert('Log aktivitas berhasil dibersihkan.', 'success');
-        });
-    }
-
-    // Handle Registrasi (jika berada di halaman register.html)
+    // Handle Registrasi (register.html)
     if (registerForm) {
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -92,28 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (existingUser) {
                 showAlert('Email sudah terdaftar. Gunakan email lain.', 'error');
-                logActivity(`Gagal daftar: Email ${email} sudah terdaftar`, 'error');
                 return;
             }
 
-            users.push({
-                name,
-                email,
-                password,
-                createdAt: new Date().toISOString()
-            });
+            users.push({ name, email, password });
             localStorage.setItem('crm_users', JSON.stringify(users));
 
-            logActivity(`Pengguna baru terdaftar: ${name} (${email})`, 'success');
             showAlert('Registrasi berhasil! Mengalihkan ke halaman masuk...', 'success');
-            
             setTimeout(() => {
                 window.location.href = 'index.html';
-            }, 1500);
+            }, 1200);
         });
     }
 
-    // Handle Login (jika berada di halaman index.html)
+    // Handle Login (index.html)
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -124,18 +70,43 @@ document.addEventListener('DOMContentLoaded', () => {
             const user = users.find(u => u.email === email && u.password === password);
 
             if (user) {
-                logActivity(`Login berhasil oleh ${user.name} (${email})`, 'success');
-                showAlert(`Login Berhasil! Selamat datang kembali, ${user.name}.`, 'success');
-                
+                // Simpan sesi aktif
                 localStorage.setItem('crm_active_session', JSON.stringify(user));
-
+                showAlert(`Login Berhasil! Selamat datang, ${user.name}.`, 'success');
                 setTimeout(() => {
-                    alert(`Masuk ke Dashboard CRM untuk ${user.name} (Tahap berikutnya siap dikembangkan)`);
-                }, 800);
+                    window.location.href = 'dashboard.html';
+                }, 1000);
             } else {
-                logActivity(`Gagal login untuk email: ${email} (Kredensial salah)`, 'error');
-                showAlert('Email atau kata sandi salah. Silakan periksa kembali.', 'error');
+                showAlert('Email atau kata sandi salah. Silakan coba lagi.', 'error');
             }
+        });
+    }
+
+    // Handle Halaman Dashboard (dashboard.html)
+    if (window.location.pathname.includes('dashboard.html')) {
+        const activeSession = JSON.parse(localStorage.getItem('crm_active_session'));
+        
+        // Proteksi Halaman Dashboard
+        if (!activeSession) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Tampilkan Nama Pengguna dari Sesi Aktif
+        const sessionUserName = document.getElementById('sessionUserName');
+        const welcomeName = document.getElementById('welcomeName');
+        const userAvatar = document.getElementById('userAvatar');
+
+        if (sessionUserName) sessionUserName.textContent = activeSession.name;
+        if (welcomeName) welcomeName.textContent = activeSession.name;
+        if (userAvatar) userAvatar.textContent = activeSession.name.charAt(0).toUpperCase();
+    }
+
+    // Handle Logout
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('crm_active_session');
+            window.location.href = 'index.html';
         });
     }
 
@@ -146,7 +117,5 @@ document.addEventListener('DOMContentLoaded', () => {
         alertMessage.style.display = 'block';
     }
 
-    // Inisialisasi awal
     initDatabase();
-    renderLogs();
 });

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Customer Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon-sm">
+                <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <span>CRM Portal</span>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="dashboard.html" class="menu-item active">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-address-book"></i>
+                <span>Pelanggan</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span>Transaksi</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Pengaturan</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="btn-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Keluar</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation Bar -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Cari data pelanggan, transaksi...">
+            </div>
+            <div class="user-profile">
+                <i class="fa-regular fa-bell notification-icon"></i>
+                <div class="user-info">
+                    <span class="user-name" id="sessionUserName">Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+                <div class="avatar" id="userAvatar">A</div>
+            </div>
+        </header>
+
+        <!-- Dashboard Body Content -->
+        <div class="dashboard-container">
+            <div class="welcome-banner">
+                <div>
+                    <h2>Selamat Datang Kembali, <span id="welcomeName">Admin</span>! 👋</h2>
+                    <p>Berikut adalah ringkasan performa manajemen pelanggan Anda hari ini.</p>
+                </div>
+            </div>
+
+            <!-- Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon blue">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Total Pelanggan</h3>
+                        <p class="metric-value">1,248</p>
+                        <span class="metric-trend positive"><i class="fa-solid fa-arrow-up"></i> +12% bulan ini</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon green">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Pelanggan Aktif</h3>
+                        <p class="metric-value">980</p>
+                        <span class="metric-trend positive"><i class="fa-solid fa-arrow-up"></i> +5% bulan ini</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon orange">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Prospek Baru</h3>
+                        <p class="metric-value">142</p>
+                        <span class="metric-trend neutral"><i class="fa-solid fa-minus"></i> Stabil</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon purple">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Pendapatan</h3>
+                        <p class="metric-value">Rp 84.5M</p>
+                        <span class="metric-trend positive"><i class="fa-solid fa-arrow-up"></i> +18% bulan ini</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Customers Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Pelanggan Terbaru</h3>
+                    <button class="btn-primary"><i class="fa-solid fa-plus"></i> Tambah Pelanggan</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Pelanggan</th>
+                                <th>Perusahaan</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Budi Santoso</td>
+                                <td>PT Solusi Bangun</td>
+                                <td>budi@solusi.co.id</td>
+                                <td><span class="badge badge-success">Aktif</span></td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn-icon danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Siti Aminah</td>
+                                <td>CV Nusa Indah</td>
+                                <td>siti@nusaindah.com</td>
+                                <td><span class="badge badge-warning">Prospek</span></td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn-icon danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Rian Wijaya</td>
+                                <td>PT Karya Utama</td>
+                                <td>rian@karyautama.id</td>
+                                <td><span class="badge badge-success">Aktif</span></td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn-icon danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Dewi Permata</td>
+                                <td>Indo Jaya Group</td>
+                                <td>dewi@indojaya.com</td>
+                                <td><span class="badge badge-danger">Non-Aktif</span></td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn-icon danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
