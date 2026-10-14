@@ -1,0 +1,141 @@
+/* Relasi – dasbor sementara */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem clamp(1rem, 4vw, 2.5rem);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--indigo-900);
+  text-decoration: none;
+}
+
+.wordmark-mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--teal-strong);
+  border-radius: 9px;
+}
+
+.topbar .btn { padding: 0.55rem 1rem; }
+
+.page {
+  width: min(100%, 56rem);
+  margin: 0 auto;
+  padding: 2.5rem clamp(1rem, 4vw, 2rem) 4rem;
+}
+
+.page-error {
+  margin: 0 0 1.5rem;
+  padding: 0.8rem 1rem;
+  background: var(--danger-soft);
+  color: #7E1F2E;
+  border-radius: 10px;
+}
+
+.welcome h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+.welcome p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 2.5rem;
+}
+
+.facts > div {
+  padding: 1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.facts dt {
+  margin: 0 0 0.2rem;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.activity-section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+}
+
+.activity {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.activity li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 0.2rem 0.85rem;
+  padding: 0.85rem 1.1rem;
+}
+.activity li + li { border-top: 1px solid var(--line); }
+
+.dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 0.5rem;
+  background: var(--muted);
+  border-radius: 50%;
+}
+.dot.success { background: var(--teal-strong); }
+.dot.danger { background: var(--danger); }
+
+.activity-title { font-weight: 600; }
+.activity-detail { display: block; font-size: 0.9rem; color: var(--muted); }
+.activity time {
+  font-size: 0.86rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 0;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+}
+
+@media (max-width: 560px) {
+  .activity li { grid-template-columns: auto 1fr; }
+  .activity time { grid-column: 2; }
+}
