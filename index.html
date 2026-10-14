@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relasi – Kelola pelanggan Anda</title>
+  <meta name="description" content="Relasi membantu Anda mencatat pelanggan, riwayat, dan tindak lanjut di satu tempat.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23171B4D'/%3E%3Ccircle cx='16' cy='13' r='4' fill='%230FA89A'/%3E%3Crect x='8' y='20' width='16' height='4' rx='2' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <!-- Tampilan loading -->
+  <div id="loader" class="loader" role="status" aria-live="polite">
+    <div class="deck" aria-hidden="true">
+      <div class="deck-card c1"><span class="avatar"></span><span class="lines"><i></i><i></i></span></div>
+      <div class="deck-card c2"><span class="avatar"></span><span class="lines"><i></i><i></i></span></div>
+      <div class="deck-card c3"><span class="avatar"></span><span class="lines"><i></i><i></i></span></div>
+    </div>
+    <p class="loader-brand">Relasi</p>
+    <p id="loader-status" class="loader-status">Menyiapkan database…</p>
+    <div class="progress" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
+  </div>
+
+  <!-- Tampilan masuk dan daftar -->
+  <main id="auth" class="auth" hidden>
+
+    <aside class="brand-panel">
+      <a class="wordmark" href="index.html" aria-label="Relasi">
+        <span class="wordmark-mark">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="9" r="3.2"/><path d="M5.5 19c.8-3.2 3.4-4.8 6.5-4.8s5.7 1.6 6.5 4.8"/></svg>
+        </span>
+        Relasi
+      </a>
+
+      <div class="brand-body">
+        <h2 class="headline">Semua pelanggan Anda, rapi di satu tempat.</h2>
+        <p class="brand-text">Catat kontak, riwayat pembelian, dan tindak lanjut tanpa spreadsheet yang berantakan.</p>
+
+        <div class="showcase" aria-hidden="true">
+          <div class="contact k1">
+            <span class="initials">SR</span>
+            <span class="contact-text"><strong>Siti Rahmawati</strong><small>Toko Kain Sari</small></span>
+            <span class="chip">Pelanggan baru</span>
+          </div>
+          <div class="contact k2">
+            <span class="initials">BS</span>
+            <span class="contact-text"><strong>Budi Santoso</strong><small>CV Maju Jaya</small></span>
+            <span class="chip chip-warn">Perlu tindak lanjut</span>
+          </div>
+          <div class="contact k3">
+            <span class="initials">AL</span>
+            <span class="contact-text"><strong>Ayu Lestari</strong><small>Warung Kopi Senja</small></span>
+            <span class="chip chip-info">Aktif</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="form-panel">
+      <div class="form-wrap">
+
+        <div class="tabs" role="tablist" aria-label="Pilih masuk atau daftar">
+          <button type="button" role="tab" id="tab-login" class="tab is-active" aria-selected="true" aria-controls="panel-login">Masuk</button>
+          <button type="button" role="tab" id="tab-register" class="tab" aria-selected="false" aria-controls="panel-register" tabindex="-1">Daftar</button>
+        </div>
+
+        <div id="notice" class="notice" role="alert" hidden></div>
+
+        <!-- Form masuk -->
+        <form id="panel-login" role="tabpanel" aria-labelledby="tab-login" novalidate>
+          <h1>Masuk ke Relasi</h1>
+          <p class="sub">Gunakan email dan kata sandi akun Anda.</p>
+
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input id="login-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
+            <p class="field-error" id="login-email-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="login-password">Kata sandi</label>
+            <div class="input-wrap">
+              <input id="login-password" name="password" type="password" autocomplete="current-password">
+              <button type="button" class="toggle-pw" data-toggle="login-password" aria-pressed="false">Tampilkan</button>
+            </div>
+            <p class="field-error" id="login-password-error"></p>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="login-remember">
+            <span>Ingat saya di perangkat ini</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary">Masuk</button>
+
+          <p class="switch-text">Belum punya akun? <button type="button" class="link" data-switch="register">Daftar sekarang</button></p>
+        </form>
+
+        <!-- Form daftar -->
+        <form id="panel-register" role="tabpanel" aria-labelledby="tab-register" novalidate hidden>
+          <h1>Buat akun baru</h1>
+          <p class="sub">Isi data berikut untuk mulai memakai Relasi.</p>
+
+          <div class="field">
+            <label for="reg-name">Nama lengkap</label>
+            <input id="reg-name" name="name" type="text" autocomplete="name" placeholder="Nama Anda">
+            <p class="field-error" id="reg-name-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="reg-email">Email</label>
+            <input id="reg-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
+            <p class="field-error" id="reg-email-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="reg-password">Kata sandi</label>
+            <div class="input-wrap">
+              <input id="reg-password" name="password" type="password" autocomplete="new-password">
+              <button type="button" class="toggle-pw" data-toggle="reg-password" aria-pressed="false">Tampilkan</button>
+            </div>
+            <div class="strength" id="reg-strength" data-level="0">
+              <div class="strength-bars" aria-hidden="true"><span></span><span></span><span></span></div>
+              <p class="strength-label" id="reg-strength-label" aria-live="polite">Minimal 8 karakter, campurkan huruf dan angka.</p>
+            </div>
+            <p class="field-error" id="reg-password-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="reg-confirm">Ulangi kata sandi</label>
+            <div class="input-wrap">
+              <input id="reg-confirm" name="confirm" type="password" autocomplete="new-password">
+              <button type="button" class="toggle-pw" data-toggle="reg-confirm" aria-pressed="false">Tampilkan</button>
+            </div>
+            <p class="field-error" id="reg-confirm-error"></p>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Buat akun</button>
+
+          <p class="switch-text">Sudah punya akun? <button type="button" class="link" data-switch="login">Masuk</button></p>
+        </form>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="js/security.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
