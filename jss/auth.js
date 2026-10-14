@@ -53,12 +53,26 @@
     $('#login-email').focus({ preventScroll: true });
   }
 
+  function withTimeout(promise, ms, message) {
+    return new Promise(function (resolve, reject) {
+      const timer = setTimeout(function () { reject(new Error(message)); }, ms);
+      promise.then(
+        function (value) { clearTimeout(timer); resolve(value); },
+        function (error) { clearTimeout(timer); reject(error); }
+      );
+    });
+  }
+
   async function boot() {
+    window.__relasiReady = true;
     const started = performance.now();
     setProgress(15, 'Menyiapkan database…');
 
     try {
-      await DB.open();
+      await withTimeout(
+        DB.open(), 8000,
+        'Database tidak merespons. Tutup tab Relasi lain atau matikan mode penyamaran, lalu muat ulang.'
+      );
     } catch (error) {
       showLoaderError(error.message || 'Database gagal dibuka.');
       return;
