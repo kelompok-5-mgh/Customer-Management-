@@ -50,7 +50,7 @@
     authView.hidden = false;
     loader.classList.add('is-leaving');
     setTimeout(function () { loader.hidden = true; }, 600);
-    $('#login-email').focus({ preventScroll: true });
+    $('#login-name').focus({ preventScroll: true });
   }
 
   function withTimeout(promise, ms, message) {
@@ -97,7 +97,7 @@
 
     await DB.logActivity({
       userId: session ? session.userId : null,
-      email: session ? session.email : null,
+      name: session ? session.name : null,
       type: 'app_open',
       detail: 'Aplikasi dibuka'
     });
@@ -149,7 +149,7 @@
     if (options.focus === 'tab') {
       (isLogin ? tabLogin : tabRegister).focus();
     } else if (options.focus !== false) {
-      (isLogin ? $('#login-email') : $('#reg-name')).focus();
+      (isLogin ? $('#login-name') : $('#reg-name')).focus();
     }
 
     if (options.log) {
@@ -199,18 +199,24 @@
 
   /* ---------- Masuk ---------- */
 
+  function validateName(name) {
+    if (name.length < 3) return 'Nama minimal 3 karakter.';
+    if (name.length > 40) return 'Nama maksimal 40 karakter.';
+    return '';
+  }
+
   async function handleLogin(event) {
     event.preventDefault();
     hideNotice();
     clearErrors(formLogin);
 
-    const email = Sec.normalizeEmail($('#login-email').value);
+    const name = Sec.normalizeName($('#login-name').value);
     const password = $('#login-password').value;
     const remember = $('#login-remember').checked;
 
     let valid = true;
-    if (!Sec.isEmail(email)) {
-      setError('login-email', 'Masukkan alamat email yang valid, misalnya nama@contoh.com.');
+    if (!name) {
+      setError('login-name', 'Masukkan nama Anda.');
       valid = false;
     }
     if (!password) {
@@ -224,15 +230,15 @@
 
     setBusy(formLogin, true, 'Memeriksa…');
 
-    const genericMessage = 'Email atau kata sandi tidak cocok. Periksa lagi, atau daftar jika belum punya akun.';
+    const genericMessage = 'Nama atau kata sandi tidak cocok. Periksa lagi, atau daftar jika belum punya akun.';
 
     try {
-      const user = await DB.findUserByEmail(email);
+      const user = await DB.findUserByName(name);
 
       if (!user) {
-        // Hash tiruan agar waktu respons tidak membocorkan apakah email terdaftar
+        // Hash tiruan agar waktu respons tidak membocorkan apakah nama terdaftar
         await Sec.hashPassword(password, Sec.createSalt());
-        await DB.logActivity({ email: email, type: 'login_failed', detail: 'Email tidak terdaftar' });
+        await DB.logActivity({ name: name, type: 'login_failed', detail: 'Nama tidak terdaftar' });
         showNotice('error', genericMessage);
         return;
       }
@@ -240,7 +246,7 @@
       if (user.lockedUntil && user.lockedUntil > Date.now()) {
         const minutes = Math.ceil((user.lockedUntil - Date.now()) / 60000);
         await DB.logActivity({
-          userId: user.id, email: user.email, type: 'login_locked',
+          userId: user.id, name: user.name, type: 'login_locked',
           detail: 'Percobaan masuk saat akun diblokir sementara'
         });
         showNotice('error', 'Terlalu banyak percobaan gagal. Coba lagi dalam ' + minutes + ' menit.');
@@ -262,7 +268,7 @@
         }
 
         await DB.saveUser(user);
-        await DB.logActivity({ userId: user.id, email: user.email, type: 'login_failed', detail: detail });
+        await DB.logActivity({ userId: user.id, name: user.name, type: 'login_failed', detail: detail });
         showNotice('error', message);
         return;
       }
@@ -279,13 +285,12 @@
       Session.save({
         userId: user.id,
         name: user.name,
-        email: user.email,
         token: Sec.createToken(),
         expiresAt: Date.now() + lifetime
       }, remember);
 
       await DB.logActivity({
-        userId: user.id, email: user.email, type: 'login_success',
+        userId: user.id, name: user.name, type: 'login_success',
         detail: remember ? 'Masuk dengan opsi ingat saya' : 'Masuk'
       });
 
@@ -304,18 +309,14 @@
     hideNotice();
     clearErrors(formRegister);
 
-    const name = $('#reg-name').value.trim().replace(/\s+/g, ' ');
-    const email = Sec.normalizeEmail($('#reg-email').value);
+    const name = Sec.normalizeName($('#reg-name').value);
     const password = $('#reg-password').value;
     const confirm = $('#reg-confirm').value;
 
     let valid = true;
-    if (name.length < 2) {
-      setError('reg-name', 'Masukkan nama lengkap Anda.');
-      valid = false;
-    }
-    if (!Sec.isEmail(email)) {
-      setError('reg-email', 'Masukkan alamat email yang valid, misalnya nama@contoh.com.');
+    const nameError = validateName(name);
+    if (nameError) {
+      setError('reg-name', nameError);
       valid = false;
     }
     if (Sec.scorePassword(password) < 2) {
@@ -333,13 +334,13 @@
 
     setBusy(formRegister, true, 'Membuat akun…');
 
-    const duplicateMessage = 'Email ini sudah terdaftar. Silakan masuk dengan email tersebut.';
+    const duplicateMessage = 'Nama ini sudah dipakai. Gunakan nama lain, atau masuk jika itu akun Anda.';
 
     try {
-      const existing = await DB.findUserByEmail(email);
+      const existing = await DB.findUserByName(name);
       if (existing) {
-        setError('reg-email', duplicateMessage);
-        await DB.logActivity({ email: email, type: 'register_failed', detail: 'Email sudah terdaftar' });
+        setError('reg-name', duplicateMessage);
+        await DB.logActivity({ name: name, type: 'register_failed', detail: 'Nama sudah dipakai' });
         focusFirstError(formRegister);
         return;
       }
@@ -349,27 +350,26 @@
 
       const user = await DB.createUser({
         name: name,
-        email: email,
         passwordHash: passwordHash,
         salt: salt,
         iterations: Sec.ITERATIONS
       });
 
       await DB.logActivity({
-        userId: user.id, email: user.email, type: 'register_success', detail: 'Akun baru dibuat'
+        userId: user.id, name: user.name, type: 'register_success', detail: 'Akun baru dibuat'
       });
 
       formRegister.reset();
       updateStrength('');
-      $('#login-email').value = email;
+      $('#login-name').value = name;
       $('#login-password').value = '';
       showForm('login', { keepNotice: true, focus: false });
       showNotice('success', 'Akun berhasil dibuat. Masukkan kata sandi Anda untuk masuk.');
       $('#login-password').focus();
     } catch (error) {
-      if (error && error.code === 'EMAIL_EXISTS') {
-        setError('reg-email', duplicateMessage);
-        await DB.logActivity({ email: email, type: 'register_failed', detail: 'Email sudah terdaftar' });
+      if (error && error.code === 'NAME_EXISTS') {
+        setError('reg-name', duplicateMessage);
+        await DB.logActivity({ name: name, type: 'register_failed', detail: 'Nama sudah dipakai' });
         focusFirstError(formRegister);
       } else {
         showNotice('error', error.message || 'Terjadi kesalahan saat membuat akun. Coba lagi.');

@@ -55,6 +55,10 @@
     return diff === 0;
   }
 
+  function normalizeName(value) {
+    return String(value || '').trim().replace(/\s+/g, ' ');
+  }
+
   function normalizeEmail(value) {
     return String(value || '').trim().toLowerCase();
   }
@@ -79,6 +83,7 @@
     createToken,
     hashPassword,
     safeEqual,
+    normalizeName,
     normalizeEmail,
     isEmail,
     scorePassword
