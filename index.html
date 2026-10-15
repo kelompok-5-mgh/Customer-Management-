@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font dimuat tanpa memblokir halaman; jika gagal, font sistem dipakai -->
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/base.css?v=3">
-  <link rel="stylesheet" href="css/auth.css?v=3">
+  <link rel="stylesheet" href="css/base.css?v=4">
+  <link rel="stylesheet" href="css/auth.css?v=4">
 </head>
 <body>
 
@@ -75,12 +75,12 @@
         <!-- Form masuk -->
         <form id="panel-login" role="tabpanel" aria-labelledby="tab-login" novalidate>
           <h1>Masuk ke Relasi</h1>
-          <p class="sub">Gunakan email dan kata sandi akun Anda.</p>
+          <p class="sub">Masuk dengan nama dan kata sandi akun Anda.</p>
 
           <div class="field">
-            <label for="login-email">Email</label>
-            <input id="login-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
-            <p class="field-error" id="login-email-error"></p>
+            <label for="login-name">Nama</label>
+            <input id="login-name" name="username" type="text" autocomplete="username" placeholder="Nama yang Anda daftarkan">
+            <p class="field-error" id="login-name-error"></p>
           </div>
 
           <div class="field">
@@ -105,18 +105,13 @@
         <!-- Form daftar -->
         <form id="panel-register" role="tabpanel" aria-labelledby="tab-register" novalidate hidden>
           <h1>Buat akun baru</h1>
-          <p class="sub">Isi data berikut untuk mulai memakai Relasi.</p>
+          <p class="sub">Isi nama dan kata sandi untuk mulai memakai Relasi.</p>
 
           <div class="field">
-            <label for="reg-name">Nama lengkap</label>
-            <input id="reg-name" name="name" type="text" autocomplete="name" placeholder="Nama Anda">
+            <label for="reg-name">Nama</label>
+            <input id="reg-name" name="username" type="text" autocomplete="username" placeholder="Nama Anda" maxlength="40">
+            <p class="hint">Nama ini dipakai untuk masuk dan tampil di profil Anda.</p>
             <p class="field-error" id="reg-name-error"></p>
-          </div>
-
-          <div class="field">
-            <label for="reg-email">Email</label>
-            <input id="reg-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
-            <p class="field-error" id="reg-email-error"></p>
           </div>
 
           <div class="field">
@@ -188,8 +183,8 @@
     })();
   </script>
 
-  <script src="js/security.js?v=3"></script>
-  <script src="js/db.js?v=3"></script>
-  <script src="js/auth.js?v=3"></script>
+  <script src="js/security.js?v=4"></script>
+  <script src="js/db.js?v=4"></script>
+  <script src="js/auth.js?v=4"></script>
 </body>
 </html>

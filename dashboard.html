@@ -9,44 +9,195 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font dimuat tanpa memblokir halaman; jika gagal, font sistem dipakai -->
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/base.css?v=3">
-  <link rel="stylesheet" href="css/dashboard.css?v=3">
+  <link rel="stylesheet" href="css/base.css?v=4">
+  <link rel="stylesheet" href="css/dashboard.css?v=4">
 </head>
 <body>
+  <a class="skip-link" href="#main">Lewati ke konten utama</a>
 
-  <header class="topbar">
-    <a class="wordmark" href="dashboard.html" aria-label="Relasi">
-      <span class="wordmark-mark">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="9" r="3.2"/><path d="M5.5 19c.8-3.2 3.4-4.8 6.5-4.8s5.7 1.6 6.5 4.8"/></svg>
-      </span>
-      Relasi
-    </a>
-    <button type="button" id="logout" class="btn btn-ghost">Keluar</button>
-  </header>
+  <div class="app">
 
-  <main class="page">
-    <p id="page-error" class="page-error" role="alert" hidden></p>
+    <!-- Menu samping -->
+    <aside class="sidebar" id="sidebar" aria-label="Menu utama">
+      <a class="wordmark" href="#/dasbor" aria-label="Relasi, ke dasbor">
+        <span class="wordmark-mark">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="9" r="3.2"/><path d="M5.5 19c.8-3.2 3.4-4.8 6.5-4.8s5.7 1.6 6.5 4.8"/></svg>
+        </span>
+        Relasi
+      </a>
 
-    <section class="welcome">
-      <h1 id="welcome-title">Halo</h1>
-      <p>Akun Anda aktif dan semua aktivitas tercatat di database. Menu pelanggan akan ditambahkan pada tahap berikutnya.</p>
-    </section>
+      <nav class="nav" aria-label="Halaman">
+        <a class="nav-link" href="#/dasbor" data-route="dasbor"><span data-icon="home"></span>Dasbor</a>
+        <a class="nav-link" href="#/pelanggan" data-route="pelanggan"><span data-icon="users"></span>Pelanggan<span class="badge" id="nav-count" hidden></span></a>
+        <a class="nav-link" href="#/tindak-lanjut" data-route="tindak-lanjut"><span data-icon="bell"></span>Tindak lanjut<span class="badge badge-alert" id="nav-followup" hidden></span></a>
+        <a class="nav-link" href="#/aktivitas" data-route="aktivitas"><span data-icon="list"></span>Aktivitas</a>
+      </nav>
 
-    <dl class="facts">
-      <div><dt>Email</dt><dd id="fact-email">–</dd></div>
-      <div><dt>Akun dibuat</dt><dd id="fact-created">–</dd></div>
-      <div><dt>Total aktivitas</dt><dd id="fact-total">–</dd></div>
-    </dl>
+      <p class="sidebar-note">Data tersimpan di browser perangkat ini.</p>
+    </aside>
+    <div class="scrim" id="scrim" hidden></div>
 
-    <section class="activity-section" aria-labelledby="activity-title">
-      <h2 id="activity-title">Aktivitas terbaru</h2>
-      <ul id="activity-list" class="activity"></ul>
-      <p id="activity-empty" class="empty" hidden>Belum ada aktivitas yang tercatat.</p>
-    </section>
-  </main>
+    <div class="content">
 
-  <script src="js/security.js?v=3"></script>
-  <script src="js/db.js?v=3"></script>
-  <script src="js/dashboard.js?v=3"></script>
+      <!-- Bar atas: judul, pencarian, profil -->
+      <header class="topbar">
+        <button type="button" class="icon-btn menu-toggle" id="menu-toggle" aria-label="Buka menu" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu" data-size="22"></span></button>
+        <h1 class="page-title" id="page-title">Dasbor</h1>
+
+        <form class="search" id="global-search" role="search">
+          <span class="search-icon" data-icon="search" data-size="18"></span>
+          <input type="search" id="search-input" placeholder="Cari pelanggan" aria-label="Cari pelanggan" autocomplete="off">
+        </form>
+
+        <div class="profile">
+          <button type="button" class="profile-btn" id="profile-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="profile-menu">
+            <span id="profile-avatar" class="profile-avatar"></span>
+            <span class="profile-name" id="profile-name">Memuat…</span>
+            <span class="profile-chevron" data-icon="chevron" data-size="16"></span>
+          </button>
+
+          <div class="menu" id="profile-menu" role="menu" aria-labelledby="profile-btn" hidden>
+            <div class="menu-head">
+              <span id="menu-avatar"></span>
+              <span class="menu-who"><strong id="menu-name"></strong><small>Akun Relasi</small></span>
+            </div>
+            <button type="button" role="menuitem" class="menu-item" id="menu-photo"><span data-icon="camera" data-size="18"></span>Ubah foto profil</button>
+            <button type="button" role="menuitem" class="menu-item" id="menu-photo-remove"><span data-icon="trash" data-size="18"></span>Hapus foto profil</button>
+            <hr class="menu-sep">
+            <button type="button" role="menuitem" class="menu-item menu-danger" id="menu-logout"><span data-icon="logout" data-size="18"></span>Keluar</button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main" class="main" tabindex="-1">
+        <p id="page-error" class="page-error" role="alert" hidden></p>
+        <div id="view"><p class="loading-text">Memuat data…</p></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Dialog pelanggan -->
+  <dialog id="customer-dialog" class="dialog" aria-labelledby="customer-dialog-title">
+    <form id="customer-form" novalidate>
+      <div class="dialog-head">
+        <h2 id="customer-dialog-title">Tambah pelanggan</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Tutup"><span data-icon="close"></span></button>
+      </div>
+
+      <div class="dialog-body">
+        <p id="cu-form-error" class="notice error" role="alert" hidden></p>
+
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="cu-name">Nama pelanggan</label>
+            <input id="cu-name" type="text" maxlength="80" autocomplete="off">
+            <p class="field-error" id="cu-name-error"></p>
+          </div>
+          <div class="field">
+            <label for="cu-company">Perusahaan atau usaha</label>
+            <input id="cu-company" type="text" maxlength="80" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="cu-city">Kota</label>
+            <input id="cu-city" type="text" maxlength="60" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="cu-phone">Telepon</label>
+            <input id="cu-phone" type="tel" inputmode="tel" maxlength="24" autocomplete="off">
+            <p class="field-error" id="cu-phone-error"></p>
+          </div>
+          <div class="field">
+            <label for="cu-email">Email</label>
+            <input id="cu-email" type="email" inputmode="email" maxlength="80" autocomplete="off">
+            <p class="field-error" id="cu-email-error"></p>
+          </div>
+          <div class="field">
+            <label for="cu-status">Status</label>
+            <select id="cu-status">
+              <option value="prospek">Prospek</option>
+              <option value="aktif">Aktif</option>
+              <option value="nonaktif">Tidak aktif</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cu-followup">Tanggal tindak lanjut</label>
+            <input id="cu-followup" type="date">
+          </div>
+          <div class="field span-2">
+            <label for="cu-notes">Catatan</label>
+            <textarea id="cu-notes" rows="3" maxlength="500"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-foot">
+        <button type="button" class="btn btn-ghost btn-inline" data-close>Batal</button>
+        <button type="submit" class="btn btn-primary btn-inline" id="cu-save">Simpan pelanggan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog hapus -->
+  <dialog id="confirm-dialog" class="dialog dialog-small" aria-labelledby="confirm-title">
+    <div class="dialog-body">
+      <h2 id="confirm-title">Hapus pelanggan?</h2>
+      <p id="confirm-text" class="dialog-text"></p>
+    </div>
+    <div class="dialog-foot">
+      <button type="button" class="btn btn-ghost btn-inline" data-close>Batal</button>
+      <button type="button" class="btn btn-danger btn-inline" id="confirm-ok">Hapus</button>
+    </div>
+  </dialog>
+
+  <!-- Dialog foto profil -->
+  <dialog id="photo-dialog" class="dialog dialog-small" aria-labelledby="photo-title">
+    <div class="dialog-head">
+      <h2 id="photo-title">Ubah foto profil</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Tutup"><span data-icon="close"></span></button>
+    </div>
+    <div class="dialog-body photo-body">
+      <div id="photo-preview" class="photo-preview"></div>
+      <label class="btn btn-ghost btn-inline photo-pick" for="photo-file">Pilih foto</label>
+      <input id="photo-file" class="sr-only" type="file" accept="image/*">
+      <p class="dialog-text">Foto dipotong menjadi persegi dan disimpan di perangkat ini.</p>
+      <p id="photo-error" class="field-error"></p>
+    </div>
+    <div class="dialog-foot">
+      <button type="button" class="btn btn-ghost btn-inline" data-close>Batal</button>
+      <button type="button" class="btn btn-primary btn-inline" id="photo-save" disabled>Simpan foto</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script>
+    // Pelapor kesalahan: tampilkan penyebab di layar bila skrip gagal
+    (function () {
+      function show(detail) {
+        var box = document.getElementById('page-error');
+        if (!box) return;
+        box.textContent = 'Halaman gagal dimuat. ' + detail;
+        box.hidden = false;
+      }
+      window.addEventListener('error', function (e) {
+        var t = e.target;
+        if (t && t !== window && t.tagName === 'SCRIPT') {
+          show('File ' + String(t.getAttribute('src')).split('?')[0] + ' tidak ditemukan atau gagal diunduh.');
+        } else if (!t || t === window) {
+          show('Kesalahan: ' + (e.message || 'tidak diketahui') + ' (' +
+            String(e.filename || '').split('/').pop().split('?')[0] + ':' + (e.lineno || 0) + ')');
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) {
+        var r = e.reason;
+        show('Kesalahan: ' + ((r && r.message) || r));
+      });
+    })();
+  </script>
+  <script src="js/security.js?v=4"></script>
+  <script src="js/db.js?v=4"></script>
+  <script src="js/ui.js?v=4"></script>
+  <script src="js/views.js?v=4"></script>
+  <script src="js/dashboard.js?v=4"></script>
 </body>
 </html>
