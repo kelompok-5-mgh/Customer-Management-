@@ -13,6 +13,10 @@
 
   /* ---------- Bantuan umum ---------- */
 
+  function openDetail(customer) {
+    App.navigate('pelanggan/' + customer.id);
+  }
+
   function stats(list) {
     const today = UI.todayStr();
     return {
@@ -130,7 +134,7 @@
     return h('ul', { class: 'mini-list' }, list.slice(0, limit).map(function (c) {
       const overdue = c.followUpDate < today;
       return h('li', {},
-        h('button', { type: 'button', class: 'who-btn', onclick: function () { openCustomerDialog(c); }, 'aria-label': 'Buka ' + c.name }, who(c, 34)),
+        h('button', { type: 'button', class: 'who-btn', onclick: function () { openDetail(c); }, 'aria-label': 'Buka detail ' + c.name }, who(c, 34)),
         h('span', { class: 'chip ' + (overdue ? 'chip-danger' : (c.followUpDate === today ? 'chip-warn' : 'chip-info')), text: UI.relativeDay(c.followUpDate) })
       );
     }));
@@ -191,7 +195,7 @@
           card('Pelanggan terbaru',
             h('ul', { class: 'mini-list' }, recent.map(function (c) {
               return h('li', {},
-                h('button', { type: 'button', class: 'who-btn', onclick: function () { openCustomerDialog(c); }, 'aria-label': 'Buka ' + c.name }, who(c, 34)),
+                h('button', { type: 'button', class: 'who-btn', onclick: function () { openDetail(c); }, 'aria-label': 'Buka detail ' + c.name }, who(c, 34)),
                 statusChip(c.status)
               );
             })),
@@ -310,7 +314,7 @@
       const rows = list.map(function (c) {
         return h('tr', {},
           h('td', { 'data-label': 'Pelanggan' },
-            h('button', { type: 'button', class: 'who-btn', onclick: function () { openCustomerDialog(c); }, 'aria-label': 'Ubah ' + c.name }, who(c))),
+            h('button', { type: 'button', class: 'who-btn', onclick: function () { openDetail(c); }, 'aria-label': 'Buka detail ' + c.name }, who(c))),
           h('td', { 'data-label': 'Kontak' }, contactCell(c)),
           h('td', { 'data-label': 'Kota', text: c.city || '–' }),
           h('td', { 'data-label': 'Status' }, statusChip(c.status)),
@@ -336,6 +340,7 @@
         h('div', { class: 'toolbar-search' }, h('span', { class: 'search-icon' }, icon('search', 18)), search),
         statusSelect,
         sortSelect,
+        h('button', { type: 'button', class: 'btn btn-ghost btn-inline', onclick: function () { global.RelasiExport.run(App); } }, icon('download', 18), 'Ekspor Excel'),
         h('button', { type: 'button', class: 'btn btn-primary btn-inline', onclick: function () { openCustomerDialog(); } }, icon('plus', 18), 'Tambah pelanggan')
       ),
       count,
@@ -386,7 +391,7 @@
         h('div', { class: 'card-head' }, h('h2', { text: group.title + ' (' + group.rows.length + ')' })),
         h('ul', { class: 'follow-list' }, group.rows.map(function (c) {
           return h('li', {},
-            who(c, 40),
+            h('button', { type: 'button', class: 'who-btn follow-who', onclick: function () { openDetail(c); }, 'aria-label': 'Buka detail ' + c.name }, who(c, 40)),
             h('span', { class: 'follow-meta' },
               h('span', { class: 'chip ' + group.cls, text: UI.relativeDay(c.followUpDate) }),
               h('small', { text: UI.formatDay(c.followUpDate) + (c.phone ? ' · ' + c.phone : '') })
@@ -532,29 +537,45 @@
     }
   });
 
-  /* ---------- Hapus pelanggan ---------- */
+  /* ---------- Konfirmasi (dipakai untuk semua penghapusan) ---------- */
 
-  function askDelete(customer) {
-    pendingDelete = customer;
-    $('#confirm-text').textContent = customer.name + ' akan dihapus permanen dari perangkat ini. Tindakan ini tidak bisa dibatalkan.';
+  let pendingConfirm = null;
+
+  function askConfirm(options) {
+    pendingConfirm = options.onConfirm;
+    $('#confirm-title').textContent = options.title;
+    $('#confirm-text').textContent = options.text;
+    $('#confirm-ok').textContent = options.okLabel || 'Hapus';
     confirmDialog.showModal();
   }
 
   $('#confirm-ok').addEventListener('click', async function () {
-    if (!pendingDelete) return;
-    const target = pendingDelete;
-    pendingDelete = null;
+    const action = pendingConfirm;
+    pendingConfirm = null;
+    if (!action) return;
     try {
-      await DB.deleteCustomer(target.id);
-      await App.log('customer_delete', 'Menghapus pelanggan: ' + target.name);
-      UI.toast(target.name + ' dihapus');
+      await action();
       confirmDialog.close();
-      await App.refresh();
     } catch (error) {
       confirmDialog.close();
-      UI.toast(error.message || 'Pelanggan gagal dihapus.', 'error');
+      UI.toast(error.message || 'Tindakan gagal. Coba lagi.', 'error');
     }
   });
+
+  function askDelete(customer) {
+    askConfirm({
+      title: 'Hapus pelanggan?',
+      text: customer.name + ' beserta seluruh riwayat interaksinya akan dihapus permanen dari perangkat ini. Tindakan ini tidak bisa dibatalkan.',
+      okLabel: 'Hapus',
+      onConfirm: async function () {
+        await DB.deleteCustomer(customer.id);
+        await App.log('customer_delete', 'Menghapus pelanggan: ' + customer.name);
+        UI.toast(customer.name + ' dihapus');
+        if (/^#\/pelanggan\/\d+/.test(window.location.hash)) App.navigate('pelanggan');
+        await App.refresh();
+      }
+    });
+  }
 
   /* ---------- Dialog umum: tombol tutup dan klik di luar ---------- */
 
@@ -569,18 +590,33 @@
   async function loadSample() {
     const DAY = 86400000;
     const now = Date.now();
+    const ago = function (days, hour) { return now - days * DAY - (hour || 0) * 3600000; };
+
     const sample = [
-      { name: 'Siti Rahmawati', company: 'Toko Kain Sari', phone: '0812-5550-0101', email: 'siti@kainsari.example', city: 'Jakarta', status: 'aktif', followUpDate: '', notes: 'Pelanggan tetap, memesan kain setiap bulan.', createdAt: now - 150 * DAY },
-      { name: 'Budi Santoso', company: 'CV Maju Jaya', phone: '0813-5550-0102', email: 'budi@majujaya.example', city: 'Bandung', status: 'prospek', followUpDate: UI.dayOffset(1), notes: 'Minta penawaran harga grosir.', createdAt: now - 12 * DAY },
-      { name: 'Ayu Lestari', company: 'Warung Kopi Senja', phone: '0857-5550-0103', email: 'ayu@kopisenja.example', city: 'Yogyakarta', status: 'aktif', followUpDate: UI.dayOffset(5), notes: 'Tertarik paket langganan bulanan.', createdAt: now - 95 * DAY },
-      { name: 'Dedi Kurniawan', company: 'PT Sentosa Abadi', phone: '0821-5550-0104', email: 'dedi@sentosa.example', city: 'Medan', status: 'nonaktif', followUpDate: '', notes: 'Kontrak berakhir, belum memperpanjang.', createdAt: now - 60 * DAY },
-      { name: 'Rina Wulandari', company: 'Apotek Sehat', phone: '0878-5550-0105', email: 'rina@apoteksehat.example', city: 'Surabaya', status: 'prospek', followUpDate: UI.dayOffset(-2), notes: 'Sudah minta demo, belum dihubungi kembali.', createdAt: now - 30 * DAY },
-      { name: 'Hendra Gunawan', company: 'UD Berkah Tani', phone: '0852-5550-0106', email: 'hendra@berkahtani.example', city: 'Makassar', status: 'aktif', followUpDate: UI.dayOffset(0), notes: 'Konfirmasi jadwal pengiriman bulan ini.', createdAt: now - 3 * DAY }
+      { name: 'Siti Rahmawati', company: 'Toko Kain Sari', phone: '0812-5550-0101', email: 'siti@kainsari.example', city: 'Jakarta', status: 'aktif', followUpDate: '', notes: 'Pelanggan tetap, memesan kain setiap bulan.', createdAt: ago(150),
+        ix: [{ type: 'pertemuan', days: 40, note: 'Kunjungan ke toko, membahas pesanan musim lebaran.' }, { type: 'telepon', days: 9, note: 'Konfirmasi pesanan 40 meter kain katun.' }] },
+      { name: 'Budi Santoso', company: 'CV Maju Jaya', phone: '0813-5550-0102', email: 'budi@majujaya.example', city: 'Bandung', status: 'prospek', followUpDate: UI.dayOffset(1), notes: 'Minta penawaran harga grosir.', createdAt: ago(12),
+        ix: [{ type: 'email', days: 6, note: 'Mengirim katalog dan daftar harga grosir.' }, { type: 'pesan', days: 2, note: 'Menanyakan apakah katalog sudah dibaca. Dijawab akan dibahas dengan tim.' }] },
+      { name: 'Ayu Lestari', company: 'Warung Kopi Senja', phone: '0857-5550-0103', email: 'ayu@kopisenja.example', city: 'Yogyakarta', status: 'aktif', followUpDate: UI.dayOffset(5), notes: 'Tertarik paket langganan bulanan.', createdAt: ago(95),
+        ix: [{ type: 'pesan', days: 25, note: 'Mengirim contoh paket langganan.' }, { type: 'telepon', days: 4, note: 'Diskusi paket langganan bulanan, minta waktu untuk berpikir.' }] },
+      { name: 'Dedi Kurniawan', company: 'PT Sentosa Abadi', phone: '0821-5550-0104', email: 'dedi@sentosa.example', city: 'Medan', status: 'nonaktif', followUpDate: '', notes: 'Kontrak berakhir, belum memperpanjang.', createdAt: ago(60),
+        ix: [{ type: 'telepon', days: 52, note: 'Menanyakan rencana perpanjangan kontrak. Belum ada keputusan.' }] },
+      { name: 'Rina Wulandari', company: 'Apotek Sehat', phone: '0878-5550-0105', email: 'rina@apoteksehat.example', city: 'Surabaya', status: 'prospek', followUpDate: UI.dayOffset(-2), notes: 'Sudah minta demo, belum dihubungi kembali.', createdAt: ago(30),
+        ix: [{ type: 'pertemuan', days: 18, note: 'Demo produk di apotek, respon positif.' }] },
+      { name: 'Hendra Gunawan', company: 'UD Berkah Tani', phone: '0852-5550-0106', email: 'hendra@berkahtani.example', city: 'Makassar', status: 'aktif', followUpDate: UI.dayOffset(0), notes: 'Konfirmasi jadwal pengiriman bulan ini.', createdAt: ago(3),
+        ix: [{ type: 'catatan', days: 1, note: 'Pengiriman bulan ini perlu dijadwalkan ulang karena gudang penuh.' }] }
     ];
 
     try {
-      await DB.addCustomers(App.user.id, sample);
-      await App.log('sample_data', 'Memuat ' + sample.length + ' pelanggan contoh');
+      const ids = await DB.addCustomers(App.user.id, sample);
+      const interactions = [];
+      sample.forEach(function (item, index) {
+        item.ix.forEach(function (ix, n) {
+          interactions.push({ customerId: ids[index], type: ix.type, note: ix.note, at: ago(ix.days, 2 + n) });
+        });
+      });
+      await DB.addInteractions(App.user.id, interactions);
+      await App.log('sample_data', 'Memuat ' + sample.length + ' pelanggan dan ' + interactions.length + ' interaksi contoh');
       UI.toast(sample.length + ' pelanggan contoh dimuat');
       await App.refresh();
     } catch (error) {
@@ -589,6 +625,7 @@
   }
 
   global.RelasiViews = {
+    setApp: function (app) { App = app; },
     routes: {
       'dasbor': renderDashboard,
       'pelanggan': renderCustomers,
@@ -596,6 +633,17 @@
       'aktivitas': renderActivities
     },
     openCustomerDialog: openCustomerDialog,
-    stats: stats
+    openDetail: openDetail,
+    askDelete: askDelete,
+    askConfirm: askConfirm,
+    stats: stats,
+    helpers: {
+      who: who,
+      statusChip: statusChip,
+      emptyState: emptyState,
+      card: card,
+      statCard: statCard,
+      activityItem: activityItem
+    }
   };
 })(window);

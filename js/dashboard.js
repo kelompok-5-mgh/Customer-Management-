@@ -13,6 +13,7 @@
     'dasbor': 'Dasbor',
     'pelanggan': 'Pelanggan',
     'tindak-lanjut': 'Tindak lanjut',
+    'laporan': 'Laporan',
     'aktivitas': 'Aktivitas'
   };
 
@@ -20,6 +21,8 @@
     user: null,
     customers: [],
     activities: [],
+    interactions: [],
+    reportDays: 30,
     meta: DB.ACTIVITY_META,
     query: '',
     statusFilter: 'semua',
@@ -46,10 +49,12 @@
   async function loadData() {
     const results = await Promise.all([
       DB.listCustomers(App.user.id),
-      DB.listActivities(App.user.id, 0)
+      DB.listActivities(App.user.id, 0),
+      DB.listInteractions(App.user.id)
     ]);
     App.customers = results[0];
     App.activities = results[1];
+    App.interactions = results[2];
   }
 
   function renderChrome() {
@@ -64,9 +69,16 @@
     due.hidden = !stats.due;
   }
 
+  // Rute berbentuk #/nama atau #/pelanggan/12 (detail pelanggan)
+  function parseHash() {
+    const match = window.location.hash.match(/^#\/([a-z-]+)(?:\/(\d+))?/);
+    const route = match && TITLES[match[1]] ? match[1] : 'dasbor';
+    const id = route === 'pelanggan' && match[2] ? Number(match[2]) : null;
+    return { route: route, id: id };
+  }
+
   function currentRoute() {
-    const match = window.location.hash.match(/^#\/([a-z-]+)/);
-    return match && TITLES[match[1]] ? match[1] : 'dasbor';
+    return parseHash().route;
   }
 
   function navigate(route) {
@@ -75,7 +87,8 @@
 
   function renderView() {
     if (!App.ready) return;
-    const route = currentRoute();
+    const parsed = parseHash();
+    const route = parsed.route;
 
     $('#page-title').textContent = TITLES[route];
     document.title = TITLES[route] + ' – Relasi';
@@ -90,7 +103,9 @@
     const view = $('#view');
     view.replaceChildren();
     try {
-      Views.routes[route](view, App);
+      Views.setApp(App);
+      if (parsed.id != null) Views.routes.detail(view, App, parsed.id);
+      else Views.routes[route](view, App);
     } catch (error) {
       showError('Halaman gagal ditampilkan: ' + error.message);
     }

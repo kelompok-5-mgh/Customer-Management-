@@ -3,7 +3,7 @@
   'use strict';
 
   const DB_NAME = 'relasi_db';
-  const DB_VERSION = 2;
+  const DB_VERSION = 3;
   const SESSION_KEY = 'relasi_session';
 
   let dbPromise = null;
@@ -25,7 +25,10 @@
     followup_done:    { label: 'Tindak lanjut selesai',      tone: 'success' },
     sample_data:      { label: 'Data contoh dimuat',         tone: 'neutral' },
     photo_update:     { label: 'Foto profil diperbarui',     tone: 'success' },
-    photo_remove:     { label: 'Foto profil dihapus',        tone: 'neutral' }
+    photo_remove:     { label: 'Foto profil dihapus',        tone: 'neutral' },
+    interaction_add:  { label: 'Interaksi dicatat',          tone: 'success' },
+    interaction_delete: { label: 'Interaksi dihapus',        tone: 'danger' },
+    export_excel:     { label: 'Data diekspor ke Excel',     tone: 'neutral' }
   };
 
   function nameKey(name) {
@@ -83,6 +86,12 @@
         if (!db.objectStoreNames.contains('customers')) {
           const customers = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
           customers.createIndex('userId', 'userId');
+        }
+
+        if (!db.objectStoreNames.contains('interactions')) {
+          const interactions = db.createObjectStore('interactions', { keyPath: 'id', autoIncrement: true });
+          interactions.createIndex('userId', 'userId');
+          interactions.createIndex('customerId', 'customerId');
         }
       };
 
@@ -198,14 +207,16 @@
         const tx = db.transaction('customers', 'readwrite');
         const store = tx.objectStore('customers');
         const now = Date.now();
-        list.forEach(function (data) {
-          store.add(Object.assign(cleanCustomer(data), {
+        const ids = [];
+        list.forEach(function (data, index) {
+          const request = store.add(Object.assign(cleanCustomer(data), {
             userId: userId,
             createdAt: data.createdAt || now,
             updatedAt: now
           }));
+          request.onsuccess = function () { ids[index] = request.result; };
         });
-        tx.oncomplete = function () { resolve(list.length); };
+        tx.oncomplete = function () { resolve(ids); };
         tx.onerror = function () { reject(tx.error); };
         tx.onabort = function () { reject(tx.error || new Error('Transaksi database dibatalkan.')); };
       });
@@ -218,8 +229,64 @@
       .then(function () { return record; });
   }
 
+  // Menghapus pelanggan beserta seluruh riwayat interaksinya
   function deleteCustomer(id) {
-    return run('customers', 'readwrite', function (store) { return store.delete(id); });
+    return open().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const tx = db.transaction(['customers', 'interactions'], 'readwrite');
+        tx.objectStore('customers').delete(id);
+        const interactions = tx.objectStore('interactions');
+        const keys = interactions.index('customerId').getAllKeys(id);
+        keys.onsuccess = function () {
+          keys.result.forEach(function (key) { interactions.delete(key); });
+        };
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+        tx.onabort = function () { reject(tx.error || new Error('Transaksi database dibatalkan.')); };
+      });
+    });
+  }
+
+  /* ---------- Interaksi ---------- */
+
+  function cleanInteraction(userId, data) {
+    return {
+      userId: userId,
+      customerId: data.customerId,
+      type: data.type || 'catatan',
+      note: data.note || '',
+      at: data.at || Date.now(),
+      createdAt: Date.now()
+    };
+  }
+
+  function addInteraction(userId, data) {
+    const record = cleanInteraction(userId, data);
+    return run('interactions', 'readwrite', function (store) { return store.add(record); })
+      .then(function (id) { return Object.assign({ id: id }, record); });
+  }
+
+  function addInteractions(userId, list) {
+    return open().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const tx = db.transaction('interactions', 'readwrite');
+        const store = tx.objectStore('interactions');
+        list.forEach(function (data) { store.add(cleanInteraction(userId, data)); });
+        tx.oncomplete = function () { resolve(list.length); };
+        tx.onerror = function () { reject(tx.error); };
+        tx.onabort = function () { reject(tx.error || new Error('Transaksi database dibatalkan.')); };
+      });
+    });
+  }
+
+  function listInteractions(userId) {
+    return run('interactions', 'readonly', function (store) {
+      return store.index('userId').getAll(userId);
+    }).then(function (rows) { return rows || []; });
+  }
+
+  function deleteInteraction(id) {
+    return run('interactions', 'readwrite', function (store) { return store.delete(id); });
   }
 
   function listCustomers(userId) {
@@ -304,6 +371,10 @@
     addCustomers: addCustomers,
     updateCustomer: updateCustomer,
     deleteCustomer: deleteCustomer,
+    addInteraction: addInteraction,
+    addInteractions: addInteractions,
+    listInteractions: listInteractions,
+    deleteInteraction: deleteInteraction,
     listCustomers: listCustomers,
     logActivity: logActivity,
     listActivities: listActivities,

@@ -50,7 +50,16 @@
     close: '<path d="m6 6 12 12M18 6 6 18"/>',
     inbox: '<path d="M4 13.5 6.5 5h11l2.5 8.5V19H4z"/><path d="M4 13.5h5l1 2.5h4l1-2.5h5"/>',
     trend: '<path d="m4 16 5-5 3.5 3.5L20 7"/><path d="M15 7h5v5"/>',
-    star: '<path d="m12 4 2.4 5 5.4.7-4 3.8 1 5.4L12 16.3 7.2 18.9l1-5.4-4-3.8 5.4-.7z"/>'
+    star: '<path d="m12 4 2.4 5 5.4.7-4 3.8 1 5.4L12 16.3 7.2 18.9l1-5.4-4-3.8 5.4-.7z"/>',
+    phone: '<path d="M5 4.5h3.5L10 9l-2 1.3a11 11 0 0 0 5.7 5.7L15 14l4.5 1.5V19A1.5 1.5 0 0 1 18 20.5 14.5 14.5 0 0 1 3.5 6 1.5 1.5 0 0 1 5 4.5z"/>',
+    message: '<path d="M4 5.5h16v11H9.5L5.5 20v-3.5H4z"/>',
+    mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/>',
+    calendar: '<rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
+    note: '<path d="M6 3.5h9l3.5 3.5v13.5H6z"/><path d="M14.5 3.5V7.5h4M9 12h6M9 16h6"/>',
+    download: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/>',
+    chart: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+    print: '<path d="M7 9V4h10v5M7 17H4.5v-7h15v7H17M7 14h10v6H7z"/>',
+    back: '<path d="m15 6-6 6 6 6"/>'
   };
 
   function icon(name, size) {
@@ -101,6 +110,15 @@
     return new Date(p[0], p[1] - 1, p[2]);
   }
 
+  function toLocalInput(ts) {
+    const d = new Date(ts);
+    return dayString(d) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function daysSince(ts) {
+    return Math.floor((Date.now() - ts) / 86400000);
+  }
+
   function formatDay(text) { return text ? dayFormat.format(parseDay(text)) : ''; }
   function formatDateTime(ts) { return dateTimeFormat.format(new Date(ts)); }
   function formatMonth(date) { return monthFormat.format(date); }
@@ -149,6 +167,16 @@
     nonaktif: { label: 'Tidak aktif', cls: 'chip-muted' }
   };
 
+  /* ---------- Jenis interaksi ---------- */
+
+  const INTERACTION = {
+    telepon:   { label: 'Telepon',   icon: 'phone' },
+    pesan:     { label: 'Pesan',     icon: 'message' },
+    email:     { label: 'Email',     icon: 'mail' },
+    pertemuan: { label: 'Pertemuan', icon: 'calendar' },
+    catatan:   { label: 'Catatan',   icon: 'note' }
+  };
+
   /* ---------- Toast ---------- */
 
   let toastTimer = null;
@@ -170,6 +198,8 @@
     todayStr: todayStr,
     dayOffset: dayOffset,
     formatDay: formatDay,
+    toLocalInput: toLocalInput,
+    daysSince: daysSince,
     formatDateTime: formatDateTime,
     formatMonth: formatMonth,
     relativeDay: relativeDay,
@@ -177,6 +207,7 @@
     initials: initials,
     avatar: avatar,
     STATUS: STATUS,
+    INTERACTION: INTERACTION,
     toast: toast
   };
 })(window);

@@ -311,7 +311,6 @@
 
     const name = Sec.normalizeName($('#reg-name').value);
     const password = $('#reg-password').value;
-    const confirm = $('#reg-confirm').value;
 
     let valid = true;
     const nameError = validateName(name);
@@ -319,12 +318,8 @@
       setError('reg-name', nameError);
       valid = false;
     }
-    if (Sec.scorePassword(password) < 2) {
-      setError('reg-password', 'Kata sandi minimal 8 karakter dan memuat huruf serta angka.');
-      valid = false;
-    }
-    if (confirm !== password) {
-      setError('reg-confirm', 'Kata sandi tidak sama. Ketik ulang dengan teliti.');
+    if (password.length < 4) {
+      setError('reg-password', 'Kata sandi minimal 4 karakter.');
       valid = false;
     }
     if (!valid) {
@@ -360,7 +355,6 @@
       });
 
       formRegister.reset();
-      updateStrength('');
       $('#login-name').value = name;
       $('#login-password').value = '';
       showForm('login', { keepNotice: true, focus: false });
@@ -377,21 +371,6 @@
     } finally {
       setBusy(formRegister, false);
     }
-  }
-
-  /* ---------- Kekuatan kata sandi ---------- */
-
-  const STRENGTH_TEXT = [
-    'Minimal 8 karakter, campurkan huruf dan angka.',
-    'Lemah. Gunakan minimal 8 karakter dengan huruf dan angka.',
-    'Cukup. Tambah panjang atau simbol agar lebih kuat.',
-    'Kuat.'
-  ];
-
-  function updateStrength(password) {
-    const level = Sec.scorePassword(password);
-    $('#reg-strength').dataset.level = String(level);
-    $('#reg-strength-label').textContent = STRENGTH_TEXT[level];
   }
 
   /* ---------- Pasang event ---------- */
@@ -420,10 +399,6 @@
       button.textContent = show ? 'Sembunyikan' : 'Tampilkan';
       button.setAttribute('aria-pressed', String(show));
     });
-  });
-
-  $('#reg-password').addEventListener('input', function (event) {
-    updateStrength(event.target.value);
   });
 
   formLogin.addEventListener('submit', handleLogin);
