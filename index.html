@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font dimuat tanpa memblokir halaman; jika gagal, font sistem dipakai -->
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/base.css?v=4">
-  <link rel="stylesheet" href="css/auth.css?v=4">
+  <link rel="stylesheet" href="css/base.css?v=5">
+  <link rel="stylesheet" href="css/auth.css?v=5">
 </head>
 <body>
 
@@ -120,20 +120,8 @@
               <input id="reg-password" name="password" type="password" autocomplete="new-password">
               <button type="button" class="toggle-pw" data-toggle="reg-password" aria-pressed="false">Tampilkan</button>
             </div>
-            <div class="strength" id="reg-strength" data-level="0">
-              <div class="strength-bars" aria-hidden="true"><span></span><span></span><span></span></div>
-              <p class="strength-label" id="reg-strength-label" aria-live="polite">Minimal 8 karakter, campurkan huruf dan angka.</p>
-            </div>
+            <p class="hint">Bebas, minimal 4 karakter. Pilih yang mudah Anda ingat.</p>
             <p class="field-error" id="reg-password-error"></p>
-          </div>
-
-          <div class="field">
-            <label for="reg-confirm">Ulangi kata sandi</label>
-            <div class="input-wrap">
-              <input id="reg-confirm" name="confirm" type="password" autocomplete="new-password">
-              <button type="button" class="toggle-pw" data-toggle="reg-confirm" aria-pressed="false">Tampilkan</button>
-            </div>
-            <p class="field-error" id="reg-confirm-error"></p>
           </div>
 
           <button type="submit" class="btn btn-primary">Buat akun</button>
@@ -183,8 +171,8 @@
     })();
   </script>
 
-  <script src="js/security.js?v=4"></script>
-  <script src="js/db.js?v=4"></script>
-  <script src="js/auth.js?v=4"></script>
+  <script src="js/security.js?v=5"></script>
+  <script src="js/db.js?v=5"></script>
+  <script src="js/auth.js?v=5"></script>
 </body>
 </html>

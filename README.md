@@ -4,10 +4,13 @@ Aplikasi pengelolaan pelanggan yang berjalan sepenuhnya di browser (HTML, CSS, J
 
 ## Fitur
 
-- Loading, masuk, dan daftar akun memakai **nama dan kata sandi** (tanpa email)
+- Loading, masuk, dan daftar akun memakai **nama dan kata sandi** saja (sandi bebas, minimal 4 karakter)
 - Dasbor: ringkasan pelanggan, grafik pelanggan baru, tindak lanjut terdekat, aktivitas terakhir
 - Pelanggan: tambah, ubah, hapus, cari, filter status, dan urutkan
+- **Detail pelanggan dan riwayat interaksi**: catat telepon, pesan, email, pertemuan, atau catatan, lengkap dengan tanggal tindak lanjut berikutnya
 - Tindak lanjut: jadwal terlambat, hari ini, dan mendatang, dengan tombol "Selesai"
+- **Laporan**: pelanggan baru, interaksi per bulan dan per jenis, status, kota teratas, pelanggan paling sering dihubungi, dan pelanggan yang perlu perhatian (periode 30 hari, 90 hari, atau 12 bulan; bisa dicetak)
+- **Ekspor Excel** (.xlsx): lembar Ringkasan, Pelanggan, Interaksi, dan Aktivitas
 - Aktivitas: semua kejadian akun tercatat di database
 - Foto profil dan nama di pojok kanan atas, dengan menu ubah foto dan keluar
 - Tampilan menyesuaikan HP dan desktop
@@ -26,7 +29,11 @@ Aplikasi pengelolaan pelanggan yang berjalan sepenuhnya di browser (HTML, CSS, J
     ├── db.js           Database IndexedDB dan sesi
     ├── ui.js           Bantuan tampilan: elemen, ikon, tanggal, toast
     ├── auth.js         Alur loading, masuk, dan daftar
-    ├── views.js        Isi halaman dan dialog pelanggan
+    ├── views.js        Dasbor, pelanggan, tindak lanjut, aktivitas, dialog pelanggan
+    ├── detail.js       Detail pelanggan dan riwayat interaksi
+    ├── reports.js      Halaman laporan
+    ├── xlsx.js         Penulis file Excel (tanpa pustaka luar)
+    ├── export.js       Menyusun data untuk ekspor Excel
     └── dashboard.js    Kerangka dasbor, profil, foto, navigasi
 ```
 
@@ -50,12 +57,13 @@ Lalu buka `http://localhost:8000`.
 
 ## Database
 
-Data disimpan di **IndexedDB** browser (`relasi_db`, versi 2):
+Data disimpan di **IndexedDB** browser (`relasi_db`, versi 3):
 
 | Tabel        | Isi                                                                  |
 |--------------|----------------------------------------------------------------------|
 | `users`      | Nama, hash kata sandi, foto profil, jumlah gagal masuk               |
 | `customers`  | Data pelanggan milik tiap akun                                       |
+| `interactions` | Riwayat interaksi per pelanggan (ikut terhapus bersama pelanggannya) |
 | `activities` | Semua aktivitas: masuk, gagal masuk, tambah/ubah/hapus pelanggan, dll |
 
 Akun dari versi sebelumnya (yang memakai email) otomatis dipindahkan: cukup masuk dengan nama yang dulu didaftarkan.
@@ -68,7 +76,7 @@ Catatan penting:
 
 ## Keamanan
 
-- Kata sandi disimpan sebagai hash PBKDF2-SHA256 dengan salt acak, bukan teks biasa.
+- Sandi boleh sederhana, tetapi tetap disimpan sebagai hash PBKDF2-SHA256 dengan salt acak, bukan teks biasa.
 - Akun diblokir 5 menit setelah 5 kali gagal masuk.
 - Pesan gagal masuk tidak membocorkan apakah nama terdaftar.
 - Sesi berlaku 8 jam, atau 30 hari jika memilih "Ingat saya".

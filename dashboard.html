@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font dimuat tanpa memblokir halaman; jika gagal, font sistem dipakai -->
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/base.css?v=4">
-  <link rel="stylesheet" href="css/dashboard.css?v=4">
+  <link rel="stylesheet" href="css/base.css?v=5">
+  <link rel="stylesheet" href="css/dashboard.css?v=5">
 </head>
 <body>
   <a class="skip-link" href="#main">Lewati ke konten utama</a>
@@ -30,6 +30,7 @@
         <a class="nav-link" href="#/dasbor" data-route="dasbor"><span data-icon="home"></span>Dasbor</a>
         <a class="nav-link" href="#/pelanggan" data-route="pelanggan"><span data-icon="users"></span>Pelanggan<span class="badge" id="nav-count" hidden></span></a>
         <a class="nav-link" href="#/tindak-lanjut" data-route="tindak-lanjut"><span data-icon="bell"></span>Tindak lanjut<span class="badge badge-alert" id="nav-followup" hidden></span></a>
+        <a class="nav-link" href="#/laporan" data-route="laporan"><span data-icon="chart"></span>Laporan</a>
         <a class="nav-link" href="#/aktivitas" data-route="aktivitas"><span data-icon="list"></span>Aktivitas</a>
       </nav>
 
@@ -137,6 +138,52 @@
     </form>
   </dialog>
 
+  <!-- Dialog catat interaksi -->
+  <dialog id="interaction-dialog" class="dialog" aria-labelledby="interaction-dialog-title">
+    <form id="interaction-form" novalidate>
+      <div class="dialog-head">
+        <h2 id="interaction-dialog-title">Catat interaksi</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Tutup"><span data-icon="close"></span></button>
+      </div>
+
+      <div class="dialog-body">
+        <p id="ix-form-error" class="notice error" role="alert" hidden></p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="ix-type">Jenis interaksi</label>
+            <select id="ix-type">
+              <option value="telepon">Telepon</option>
+              <option value="pesan">Pesan</option>
+              <option value="email">Email</option>
+              <option value="pertemuan">Pertemuan</option>
+              <option value="catatan">Catatan</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ix-date">Tanggal dan jam</label>
+            <input id="ix-date" type="datetime-local">
+            <p class="field-error" id="ix-date-error"></p>
+          </div>
+          <div class="field span-2">
+            <label for="ix-note">Ringkasan</label>
+            <textarea id="ix-note" rows="4" maxlength="600" placeholder="Apa yang dibahas atau disepakati?"></textarea>
+            <p class="field-error" id="ix-note-error"></p>
+          </div>
+          <div class="field span-2">
+            <label for="ix-followup">Tindak lanjut berikutnya (opsional)</label>
+            <input id="ix-followup" type="date">
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-foot">
+        <button type="button" class="btn btn-ghost btn-inline" data-close>Batal</button>
+        <button type="submit" class="btn btn-primary btn-inline" id="ix-save">Simpan interaksi</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Dialog hapus -->
   <dialog id="confirm-dialog" class="dialog dialog-small" aria-labelledby="confirm-title">
     <div class="dialog-body">
@@ -194,10 +241,14 @@
       });
     })();
   </script>
-  <script src="js/security.js?v=4"></script>
-  <script src="js/db.js?v=4"></script>
-  <script src="js/ui.js?v=4"></script>
-  <script src="js/views.js?v=4"></script>
-  <script src="js/dashboard.js?v=4"></script>
+  <script src="js/security.js?v=5"></script>
+  <script src="js/db.js?v=5"></script>
+  <script src="js/ui.js?v=5"></script>
+  <script src="js/xlsx.js?v=5"></script>
+  <script src="js/export.js?v=5"></script>
+  <script src="js/views.js?v=5"></script>
+  <script src="js/detail.js?v=5"></script>
+  <script src="js/reports.js?v=5"></script>
+  <script src="js/dashboard.js?v=5"></script>
 </body>
 </html>
